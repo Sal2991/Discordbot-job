@@ -1,12 +1,19 @@
 # Discord Job Bot
 
-I'm making a small Discord bot that checks for new internship postings and sends them to me. I'm using it to practice C++ and learn how to work with APIs and save data.
+I'm making a small bot that can check for new internship postings and send them to Discord. I'm using it to practice C++ and learn how to work with APIs and save data.
 
-## Goals
+## What works so far
 
-- Find internship listings
-- Avoid sending the same job twice
-- Send new listings to Discord
-- Add more job sources over time
+- A simple struct for a job listing
+- A small tracker that remembers job IDs during one run
+- A local example that shows a duplicate being skipped
 
-Still just getting started, so most of this isn't built yet.
+## Still to do
+
+- Connect to real internship listing sources
+- Decide how to store seen job IDs between runs
+- Add Discord message delivery
+- Add config for API keys and channel settings
+- Handle network errors and rate limits
+
+Right now this is just the starting logic. It does not fetch real listings or connect to Discord yet.
