@@ -2,6 +2,7 @@
 
 #include "job_bot/job_listing.hpp"
 
+#include <cstddef>
 #include <string>
 #include <unordered_set>
 
