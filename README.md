@@ -1,19 +1,29 @@
 # Discord Job Bot
 
-I'm making a small bot that can check for new internship postings and send them to Discord. I'm using it to practice C++ and learn how to work with APIs and save data.
+An early C++23 prototype for tracking internship listings and, eventually, delivering new listings to Discord. The current repository demonstrates the tracking logic only; it is not yet a working Discord bot.
 
-## What works so far
+## Implemented
 
-- A simple struct for a job listing
-- A small tracker that remembers job IDs during one run
-- A local example that shows a duplicate being skipped
+- A `JobListing` data structure containing an ID, title, company, and URL
+- An in-memory `JobTracker` that records non-empty job IDs
+- Duplicate detection for IDs during one program run
+- A demo that adds one sample listing and skips a second listing with the same ID
 
-## Still to do
+## Build and run
 
-- Connect to real internship listing sources
-- Decide how to store seen job IDs between runs
-- Add Discord message delivery
-- Add config for API keys and channel settings
-- Handle network errors and rate limits
+Requirements: CMake 3.20+ and a compiler with C++23 support.
 
-Right now this is just the starting logic. It does not fetch real listings or connect to Discord yet.
+```sh
+cmake -S . -B build
+cmake --build build --config Release
+./build/discord_job_bot
+```
+
+## Not implemented yet
+
+- Fetching listings from real job APIs or websites
+- Discord bot authentication, message delivery, or channel configuration
+- Persistent storage of seen IDs between runs
+- Network error handling, rate-limit handling, and configuration for secrets
+
+The example uses sample data and does not make network requests. Job IDs are remembered only in memory for the lifetime of the tracker.
