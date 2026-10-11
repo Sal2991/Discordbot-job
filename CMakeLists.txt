@@ -9,6 +9,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 add_executable(discord_job_bot
     src/main.cpp
     src/job_tracker.cpp
+    src/job_formatter.cpp
 )
 
 target_include_directories(discord_job_bot PRIVATE
