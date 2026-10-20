@@ -2,6 +2,7 @@
 #include "job_bot/job_tracker.hpp"
 
 #include <cassert>
+#include <filesystem>
 #include <string>
 
 int main() {
@@ -35,9 +36,28 @@ int main() {
     missingUrl.url = "";
     assert(!tracker.addJob(missingUrl));
 
+    auto multilineId = listing;
+    multilineId.id = "first\nsecond";
+    assert(!tracker.addJob(multilineId));
+
     const std::string expected =
         "📌 **Software Engineering Intern** — Example Company\n"
         "Apply: https://example.com/jobs/intern-001";
     assert(job_bot::formatJobAlert(listing) == expected);
+
+    const auto storagePath =
+        std::filesystem::temp_directory_path() / "discord_job_bot_seen_ids_test.txt";
+    const std::string path = storagePath.string();
+
+    assert(tracker.saveSeenIds(path));
+
+    job_bot::JobTracker restored;
+    assert(restored.loadSeenIds(path));
+    assert(restored.getJobCount() == 1);
+    assert(!restored.addJob(listing));
+
+    std::filesystem::remove(storagePath);
+    assert(!restored.loadSeenIds(path));
+
     return 0;
 }
