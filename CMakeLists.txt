@@ -9,6 +9,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 add_library(job_bot_core
     src/job_tracker.cpp
     src/job_formatter.cpp
+    src/job_pipeline.cpp
 )
 target_include_directories(job_bot_core PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
