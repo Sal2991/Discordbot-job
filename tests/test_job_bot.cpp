@@ -1,9 +1,29 @@
 #include "job_bot/job_formatter.hpp"
+#include "job_bot/job_pipeline.hpp"
+#include "job_bot/job_source.hpp"
 #include "job_bot/job_tracker.hpp"
 
 #include <cassert>
 #include <filesystem>
 #include <string>
+#include <vector>
+
+namespace {
+
+class FakeJobSource final : public job_bot::JobSource {
+public:
+    explicit FakeJobSource(std::vector<job_bot::JobListing> listings)
+        : listings_(std::move(listings)) {}
+
+    std::vector<job_bot::JobListing> fetchJobs() override {
+        return listings_;
+    }
+
+private:
+    std::vector<job_bot::JobListing> listings_;
+};
+
+} // namespace
 
 int main() {
     const job_bot::JobListing listing{
@@ -45,6 +65,22 @@ int main() {
         "Apply: https://example.com/jobs/intern-001";
     assert(job_bot::formatJobAlert(listing) == expected);
 
+    // The source abstraction lets the pipeline be tested without network access.
+    const job_bot::JobListing secondListing{
+        "intern-002",
+        "C++ Developer Intern",
+        "Sample Systems",
+        "https://example.com/jobs/intern-002"
+    };
+    FakeJobSource source({listing, secondListing, listing, missingTitle});
+    const auto newJobs = job_bot::collectNewJobs(source, tracker);
+    assert(newJobs.size() == 1);
+    assert(newJobs.front().id == "intern-002");
+    assert(tracker.getJobCount() == 2);
+
+    FakeJobSource unchangedSource({listing, secondListing});
+    assert(job_bot::collectNewJobs(unchangedSource, tracker).empty());
+
     const auto storagePath =
         std::filesystem::temp_directory_path() / "discord_job_bot_seen_ids_test.txt";
     const std::string path = storagePath.string();
@@ -53,8 +89,9 @@ int main() {
 
     job_bot::JobTracker restored;
     assert(restored.loadSeenIds(path));
-    assert(restored.getJobCount() == 1);
+    assert(restored.getJobCount() == 2);
     assert(!restored.addJob(listing));
+    assert(!restored.addJob(secondListing));
 
     std::filesystem::remove(storagePath);
     assert(!restored.loadSeenIds(path));
